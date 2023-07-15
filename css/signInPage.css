@@ -1,0 +1,137 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.container{
+    height: 100vh;
+    width: 100%;
+    background: linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url(../assets/images/background.jpg);
+    background-size: cover;
+    background-position: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.nav-bar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 80px;
+}
+.nav-bar .title{
+    color: #fff;
+    font-size: 67px;
+    font-weight: 600;
+    cursor: pointer;
+}
+span{
+    color: crimson;
+}
+.menu li{
+    list-style: none;
+    display: inline-block;
+}
+.menu li a{
+    text-decoration: none;
+    color: #fff;
+    font-size: 27px;
+    font-weight: 600;
+    margin-left: 25px;
+    transition: .4s ease;
+}
+.nav-bar p{
+    position: absolute;
+    margin-top: 100px;
+    margin-left: 50px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 500;
+}
+.menu li a:hover{
+    color: crimson;
+    padding: 8px 20px;
+    border: 2px solid #fff;
+}
+.wrapper{
+    width: 400px;
+    padding: 40px 40px;
+    margin: 45px auto;
+    background: #ffffff3c;
+    border-radius: 30px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+h1.welcome{
+    color: #fff;
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+form{
+    position: relative;
+}
+form input {
+    width: auto; 
+    outline: none;
+    background: #ffffff94;
+    border: none;
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: border-color 0.3s;
+  }
+  
+form input:hover {
+    border: 2px solid transparent;
+    border-color: crimson;
+}
+.recover{
+    font-size: 17px;
+    text-align: center;
+}
+.recover a{
+    color: rgb(234, 108, 133);
+    text-decoration: none;
+}
+.signup{
+    color: #fff;
+    font-size: 17px;
+}
+.signup a{
+    color: rgb(234, 108, 133);
+    text-decoration: none;
+}
+.or{
+    color: #fff;
+    font-size: 17px;
+}
+.icons i{
+    color: black;
+    padding: 5px 15px;
+    border-radius: 10px;
+    font-size: 25px;
+    margin: 10px;
+    cursor: pointer;
+}
+.icons i:first-child{
+    color: red;
+}
+.icons i:last-child{
+    color: blue;
+}
+.wrapper button{
+    font-size: 17px;
+    margin: 10px;
+    padding: 8px 0;
+    border-radius: 20px;
+    border: none;
+    width: 85%;
+    background: crimson;
+    color: #fff;
+    cursor: pointer;
+    transition: .4s;
+}
+.wrapper button:hover{
+    background: rgb(250, 91, 122);
+}
+
+
+  
