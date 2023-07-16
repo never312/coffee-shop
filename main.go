@@ -6,6 +6,8 @@ import (
 	"html/template"
 	h "net/http"
 
+	"golang.org/x/crypto/bcrypt"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -28,9 +30,6 @@ func main() {
 		panic(err.Error())
 	}
 
-	insertUser(2, "kikita", "kikita@bk.ru", "12345")
-	f.Println("Successful Connecting to Database!")
-
 	h.HandleFunc("/login", loginHandler)
 	h.HandleFunc("/loginauth", loginAuthHandler)
 	h.HandleFunc("/register", registerHandler)
@@ -38,21 +37,37 @@ func main() {
 	h.ListenAndServe("localhost:8080", nil)
 }
 
-func insertUser(id int, username, email, password string) {
-	insert, err := db.Query("INSERT INTO `coffeeShopDB`.`users` (`id`, `username`, `email`, `password`) VALUES (?, ?, ?, ?)", id, username, email, password)
-	if err != nil {
-		panic(err.Error())
-	}
-	defer insert.Close()
-}
-
 func loginHandler(w h.ResponseWriter, r *h.Request) {
-
+	f.Println("*****loginHandler running*****")
+	tpl.ExecuteTemplate(w, "/templates/signInPage.html", nil)
 }
 
 func loginAuthHandler(w h.ResponseWriter, r *h.Request) {
+	f.Println("*****loginAuthHandler running*****")
+	r.ParseForm()
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	f.Printf("username: %v, password: %v", username, password)
+	var hash string
+	stmt := "select password from users where username = ?"
+	row := db.QueryRow(stmt, username)
+	err := row.Scan(&hash)
+	f.Println("hash from db:", hash)
+	if err != nil {
+		f.Println("error selecting Hash in db by username")
+		tpl.ExecuteTemplate(w, "SignInPage.html", "check username and password")
+		return
+	}
 
+	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err == nil {
+		f.Fprint(w, "You have successfully sign in")
+		return
+	}
+	f.Println("incorrect password")
+	tpl.ExecuteTemplate(w, "templates/signInPage.html", "check username and password")
 }
+
 func registerHandler(w h.ResponseWriter, r *h.Request) {
 
 }
