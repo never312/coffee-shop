@@ -83,6 +83,7 @@ func loginAuthHandler(w h.ResponseWriter, r *h.Request) {
 	}
 	f.Println("incorrect password")
 	tpl.ExecuteTemplate(w, "signInPage.html", "check username and password")
+
 }
 
 func registerHandler(w h.ResponseWriter, r *h.Request) {
@@ -102,12 +103,6 @@ func registerAuthHandler(w h.ResponseWriter, r *h.Request) {
 		5. insert username and password hash in database
 	*/
 	f.Println("*****registerAuthHandler running*****")
-
-	tpl, err := template.ParseGlob("templates/*.html")
-	if err != nil {
-		f.Println("Error parsing templates:", err)
-		return
-	}
 
 	r.ParseForm()
 	username := r.FormValue("username")
@@ -184,5 +179,6 @@ func registerAuthHandler(w h.ResponseWriter, r *h.Request) {
 		tpl.ExecuteTemplate(w, "signUpPage.html", "there was a problem registering account")
 		return
 	}
+	h.Redirect(w, r, "/", h.StatusFound)
 	f.Fprint(w, "congrats, your account has been successfully created")
 }
