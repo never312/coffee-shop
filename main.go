@@ -34,10 +34,10 @@ func main() {
 	h.Handle("/static/", h.StripPrefix("/static/", h.FileServer(h.Dir("static"))))
 
 	h.HandleFunc("/", mainPageHandler)
-	h.HandleFunc("/login", loginHandler)
-	h.HandleFunc("/loginauth", loginAuthHandler)
-	h.HandleFunc("/register", registerHandler)
-	h.HandleFunc("/registerauth", registerAuthHandler)
+	h.HandleFunc("/signin", loginHandler)
+	h.HandleFunc("/signinauth", loginAuthHandler)
+	h.HandleFunc("/signup", registerHandler)
+	h.HandleFunc("/signupauth", registerAuthHandler)
 	h.ListenAndServe("localhost:8080", nil)
 }
 
@@ -72,7 +72,7 @@ func loginAuthHandler(w h.ResponseWriter, r *h.Request) {
 	f.Println("hash from db:", hash)
 	if err != nil {
 		f.Println("error selecting Hash in db by username")
-		tpl.ExecuteTemplate(w, "SignInPage.html", "check username and password")
+		tpl.ExecuteTemplate(w, "signInPage.html", "check username and password")
 		return
 	}
 
@@ -102,6 +102,13 @@ func registerAuthHandler(w h.ResponseWriter, r *h.Request) {
 		5. insert username and password hash in database
 	*/
 	f.Println("*****registerAuthHandler running*****")
+
+	tpl, err := template.ParseGlob("templates/*.html")
+	if err != nil {
+		f.Println("Error parsing templates:", err)
+		return
+	}
+
 	r.ParseForm()
 	username := r.FormValue("username")
 	var nameAlphaNumeric = true
@@ -143,38 +150,36 @@ func registerAuthHandler(w h.ResponseWriter, r *h.Request) {
 	stmt := "SELECT id FROM users WHERE username = ?"
 	row := db.QueryRow(stmt, username)
 	var uID string
-	err := row.Scan(&uID)
-	if err != sql.ErrNoRows {
-		f.Println("username already exists, err:", err)
+	errQuery := row.Scan(&uID)
+	if errQuery != sql.ErrNoRows {
+		f.Println("username already exists, err:", errQuery)
 		tpl.ExecuteTemplate(w, "signUpPage.html", "username already taken")
 		return
 	}
 	var hash []byte
-	hash, err = bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		f.Println("bcrypt err:", err)
+	hash, errHash := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if errHash != nil {
+		f.Println("bcrypt err:", errHash)
 		tpl.ExecuteTemplate(w, "signUpPage.html", "there was a problem registering account")
 		return
 	}
 	f.Println("hash:", hash)
 	f.Println("string(hash):", string(hash))
-	var insertStmt *sql.Stmt
-	insertStmt, err = db.Prepare("INSERT INTO users (Username, Hash) VALUES (?, ?);")
-	if err != nil {
-		f.Println("error preparing statement:", err)
+	insertStmt, errInsert := db.Prepare("INSERT INTO users (username, password) VALUES (?, ?);")
+	if errInsert != nil {
+		f.Println("error preparing statement:", errInsert)
 		tpl.ExecuteTemplate(w, "signUpPage.html", "there was a problem registering account")
 		return
 	}
 	defer insertStmt.Close()
 
-	var result sql.Result
-	result, err = insertStmt.Exec(username, hash)
+	result, errExec := insertStmt.Exec(username, hash)
 	rowsAff, _ := result.RowsAffected()
 	lastIns, _ := result.LastInsertId()
 	f.Println("rowsAff:", rowsAff)
 	f.Println("lastIns:", lastIns)
-	f.Println("err:", err)
-	if err != nil {
+	f.Println("err:", errExec)
+	if errExec != nil {
 		f.Println("error inserting new user")
 		tpl.ExecuteTemplate(w, "signUpPage.html", "there was a problem registering account")
 		return
