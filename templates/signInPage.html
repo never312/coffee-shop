@@ -31,6 +31,10 @@
                     </p>
                     <button type="submit">Sign In</button>
                 </form>
+                <br><br>
+                {{if .}}
+                    {{.}}
+                {{end}}
                 <p class="or">Sign in via social networks</p>
                 <div class="icons">
                     <i class="fab fa-google"></i>

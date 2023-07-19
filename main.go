@@ -78,6 +78,7 @@ func loginAuthHandler(w h.ResponseWriter, r *h.Request) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err == nil {
+		h.Redirect(w, r, "/signin", h.StatusFound)
 		f.Fprint(w, "You have successfully sign in")
 		return
 	}
@@ -142,6 +143,14 @@ func registerAuthHandler(w h.ResponseWriter, r *h.Request) {
 		tpl.ExecuteTemplate(w, "signUpPage.html", "please check username and password criteria")
 		return
 	}
+
+	confirmPassword := r.FormValue("confirm_password")
+
+	if password != confirmPassword {
+		tpl.ExecuteTemplate(w, "signUpPage.html", "Passwords do not match")
+		return
+	}
+
 	stmt := "SELECT id FROM users WHERE username = ?"
 	row := db.QueryRow(stmt, username)
 	var uID string
@@ -179,6 +188,6 @@ func registerAuthHandler(w h.ResponseWriter, r *h.Request) {
 		tpl.ExecuteTemplate(w, "signUpPage.html", "there was a problem registering account")
 		return
 	}
-	h.Redirect(w, r, "/", h.StatusFound)
+	h.Redirect(w, r, "/signin", h.StatusFound)
 	f.Fprint(w, "congrats, your account has been successfully created")
 }
